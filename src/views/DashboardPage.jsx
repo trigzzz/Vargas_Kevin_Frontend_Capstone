@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  fetchWorkoutLogs, 
-  createWorkoutLog, 
-  updateWorkoutLog, 
-  deleteWorkoutLog 
+import {
+  fetchWorkoutLogs,
+  createWorkoutLog,
+  updateWorkoutLog,
+  deleteWorkoutLog
 } from '../features/workoutLogs/workoutLogsSlice';
-import EditLogModal from '../components/EditLogModal'; 
+import EditLogModal from '../components/EditLogModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,6 +14,9 @@ function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentLog, setCurrentLog] = useState({});
   const [newLogContent, setNewLogContent] = useState('');
+  const [newLogDuration, setNewLogDuration] = useState('');
+  const [newLogTypeOfTraining, setNewLogTypeOfTraining] = useState('');
+  const [newLogFeedback, setNewLogFeedback] = useState('');
   const dispatch = useDispatch();
   const { logs, status } = useSelector((state) => state.workoutLogs);
 
@@ -27,8 +30,17 @@ function DashboardPage() {
       toast.error('Log content cannot be empty.');
       return;
     }
-    dispatch(createWorkoutLog({ content: newLogContent }));
+    const logData = {
+      content: newLogContent,
+      duration: newLogDuration,
+      typeOfTraining: newLogTypeOfTraining,
+      feedback: newLogFeedback,
+    };
+    dispatch(createWorkoutLog(logData));
     setNewLogContent('');
+    setNewLogDuration('');
+    setNewLogTypeOfTraining('');
+    setNewLogFeedback('');
     toast.success('Log added successfully');
   };
 
@@ -37,12 +49,8 @@ function DashboardPage() {
     setIsModalOpen(true);
   };
 
-  const handleUpdateLog = (id, content) => {
-    if (!content.trim()) {
-      toast.error('Log content cannot be empty.');
-      return;
-    }
-    dispatch(updateWorkoutLog({ id, logData: { content } }));
+  const handleUpdateLog = (id, logData) => {
+    dispatch(updateWorkoutLog({ id, logData }));
     setIsModalOpen(false);
     toast.success('Log updated successfully');
   };
@@ -70,6 +78,23 @@ function DashboardPage() {
           value={newLogContent}
           onChange={(e) => setNewLogContent(e.target.value)}
         />
+        <input
+          type="text"
+          placeholder="Duration (in minutes)"
+          value={newLogDuration}
+          onChange={(e) => setNewLogDuration(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Type of Training"
+          value={newLogTypeOfTraining}
+          onChange={(e) => setNewLogTypeOfTraining(e.target.value)}
+        />
+        <textarea
+          placeholder="Feedback"
+          value={newLogFeedback}
+          onChange={(e) => setNewLogFeedback(e.target.value)}
+        />
         <button type="submit">Add Log</button>
       </form>
 
@@ -78,12 +103,12 @@ function DashboardPage() {
       
       {logs.map(log => (
         <div key={log.id} style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ccc" }}>
-          <h3>{log.title || "Workout Log"}</h3> {/*  title */}
+          <h3>{log.title || "Workout Log"}</h3>
           <p>{log.content}</p>
-          <p>Date: {new Date(log.date).toLocaleDateString()}</p> {/* date */}
-          <p>Duration: {log.duration} minutes</p> { /* duration */}
-          <p>Type of Training: {log.typeOfTraining}</p> {/*  type of training */}
-          <p>Feedback: {log.feedback}</p> {/* feedback */}
+          <p>Date: {new Date(log.date).toLocaleDateString()}</p>
+          <p>Duration: {log.duration} minutes</p>
+          <p>Type of Training: {log.typeOfTraining}</p>
+          <p>Feedback: {log.feedback}</p>
           <button onClick={() => handleEditClick(log)}>Edit</button>
           <button onClick={() => handleDeleteLog(log._id)} style={{ marginLeft: "10px" }}>Delete</button>
         </div>

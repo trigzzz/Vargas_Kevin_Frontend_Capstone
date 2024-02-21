@@ -45,7 +45,7 @@ function RegisterForm() {
         placeholder="Password"
         required
       />
-      <button type="submit">Register</button>
+      <button type="submit">Create Account</button>
     </form>
   );
 }

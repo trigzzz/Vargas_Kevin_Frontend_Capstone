@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+
+
 // Async thunk for fetching community posts
-export const fetchCommunityPosts = createAsyncThunk('communityPosts/fetchCommunityPosts', async () => {
+export const fetchCommunityPost = createAsyncThunk('communityPosts/fetchCommunityPosts', async () => {
   const response = await axios.get('http://localhost:3000/api/communityposts');
   return response.data;
 });
@@ -25,13 +27,13 @@ export const deleteCommunityPost = createAsyncThunk('communityPosts/deleteCommun
   return id;
 });
 
-const communityPostsSlice = createSlice({
-  name: 'communityPosts',
+const communityPostSlice = createSlice({
+  name: 'communityPost',
   initialState: { posts: [], status: 'idle', error: null },
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(fetchCommunityPosts.fulfilled, (state, action) => {
+      .addCase(fetchCommunityPost.fulfilled, (state, action) => {
         state.posts = action.payload;
         state.status = 'succeeded';
       })
@@ -50,4 +52,4 @@ const communityPostsSlice = createSlice({
   },
 });
 
-export default communityPostsSlice.reducer;
+export default communityPostSlice.reducer;

@@ -21,3 +21,7 @@ Prerequisites
 Node.js
 MongoDB
 
+## Road map
+Add Plans
+Add Community Forum
+Create a clean website layout after majority of code is done

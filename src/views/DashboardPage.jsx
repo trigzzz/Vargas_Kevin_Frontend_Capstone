@@ -12,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentLog, setCurrentLog] = useState({});
+  const [currentLog, setCurrentLog] = useState(null);
   const [newLogContent, setNewLogContent] = useState('');
   const [newLogDuration, setNewLogDuration] = useState('');
   const [newLogTypeOfTraining, setNewLogTypeOfTraining] = useState('');
@@ -45,18 +45,33 @@ function DashboardPage() {
   };
 
   const handleEditClick = (log) => {
+    console.log('Selected log for editing:', log);
     setCurrentLog(log);
     setIsModalOpen(true);
   };
 
-  const handleUpdateLog = (id, logData) => {
-    dispatch(updateWorkoutLog({ id, logData }));
-    setIsModalOpen(false);
-    toast.success('Log updated successfully');
+  const handleUpdateLog = (_id, updatedLogDetails) => {
+    if (!_id) {
+      console.error("Log ID (_id) is undefined.");
+      toast.error("Error: Log ID (_id) is undefined.");
+      return;
+    }
+    console.log(`Updating log with _id: ${_id}`, updatedLogDetails);
+    dispatch(updateWorkoutLog({ id: _id, logData: updatedLogDetails }))
+      .unwrap()
+      .then(() => {
+        toast.success('Log updated successfully');
+        setIsModalOpen(false);
+        setCurrentLog(null); 
+      })
+      .catch((error) => {
+        console.error("Error updating log:", error);
+        toast.error(`Error updating log: ${error.message || 'Unknown error'}`);
+      });
   };
 
-  const handleDeleteLog = (id) => {
-    dispatch(deleteWorkoutLog(id))
+  const handleDeleteLog = (_id) => {
+    dispatch(deleteWorkoutLog(_id))
       .unwrap()
       .then(() => {
         toast.success('Log deleted successfully');
@@ -102,7 +117,7 @@ function DashboardPage() {
       {status === 'failed' && <p>Error fetching logs.</p>}
       
       {logs.map(log => (
-        <div key={log.id} style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ccc" }}>
+        <div key={log._id} style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ccc" }}>
           <h3>{log.title || "Workout Log"}</h3>
           <p>{log.content}</p>
           <p>Date: {new Date(log.date).toLocaleDateString()}</p>
@@ -117,7 +132,7 @@ function DashboardPage() {
       <EditLogModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        log={currentLog}
+        currentLog={currentLog}
         onUpdate={handleUpdateLog}
       />
     </div>
